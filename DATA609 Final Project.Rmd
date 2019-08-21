@@ -1,0 +1,276 @@
+---
+title: "DATA609 Final Project"
+author: "Bin Lin"
+date: "2017-12-1"
+output: html_document
+---
+
+Page 285
+
+###2. A farmer has 30 acres on which to grow tomatoes and corn. Each 100 bushels of tomatoes require 1000 gallons of water and 5 acres of land. Each 100 bushels of corn require 6000 gallons of water and 2.5 acres of land. Labor costs are $1 per bushel for both corn and tomatoes. The farmer has available 30,000 gallons of water and $750 in capital. He knows that he cannot sell more than 500 bushels of tomatoes or 475 bushels of corn. He estimates a profit of $2 on each bushel of tomatoes and $3 on each bushel of corn.
+
+####a. How many bushels of each should he raise to maximize profits?
+
+**Decision Variables:**
+
+x: The number of bushels of tomatoes
+
+y: The number of bushels of corn
+
+**Objective function:**
+
+maximize 2x + 3y
+
+**Constraints:**
+
+subject to:
+
+$\frac { x }{ 100 } *1000+\frac { y }{ 100 } *6000\le 30000$
+
+$\frac { x }{ 100 } *5+\frac { y }{ 100 } *2.5\le 30$
+
+$x+y\le 750$
+
+$0\le x\le 500$
+
+$0\le y\le 475$
+
+
+***Geometric Solutions***
+
+Converting the constraints function to the following:
+
+$y\le 500-\frac { x }{ 6 }$
+
+$y\le 1200-2x$
+
+$y\le 750-x$
+
+$0\le x\le 500$
+
+$0\le y\le 475$
+
+
+```{r}
+water <- function(x){500 - x / 6}
+land <- function(x){1200 - 2 * x}
+labor <- function(x){750 - x}
+
+curve(water, from=0, to=500, xlab="x", ylab="y", ylim = c(0, 500), xname = "Tamato", main='Linear Programming')
+curve(land, from=0, to=500, xlab="x", ylab="y", add = TRUE)
+curve(labor, from=0, to=500, xlab="x", ylab="y", add = TRUE)
+
+abline(a = 475, b = 0)
+abline(a = 0, b = 0)
+
+text(c(150,300,450), c(450,425,275), labels=c("(150,475)", "(300,450)", "(450,300)"))
+```
+
+The extreme points are shown on the graph. The points are (150,475), (300,450), (450,300), the objective function values (2x + 3y) for each points are 1725, 1950, 1800 respectively. Therefore, we can conclude the farmer needs to raise 300 bushels of tamato and 450 bushels of corns to reach the maximum profits of 1950 dollars. 
+
+
+***R Package lpSolve Solution***
+
+```{r}
+#install.packages("lpSolve")
+library("lpSolve")
+
+f.obj <- c(2, 3)
+
+row1 = c(10, 60)
+row2 = c(1/20, 1/40)
+row3 = c(1, 1)
+
+
+f.con <- rbind(row1, row2, row3)
+f.dir <- c("<=", "<=", "<=")
+f.rhs <- c(30000, 30, 750)
+
+lp ("max", f.obj, f.con, f.dir, f.rhs)
+lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+```
+
+We reached same conclusion.
+
+
+***Algebraic Solution***
+
+Maximize 2x + 3y
+
+First, we convert each inequalit to an equality by adding a nonnegative new variable called slack variables s1, s2, s3. 
+
+$10x+60y+{ s }_{ 1 }=30000$
+
+$\frac { x }{ 20 } +\frac { y }{ 40 } +{ s }_{ 2 }\le 30$
+
+$x+y+{ s }_{ 3 }\le 750$
+
+$0\le x\le 500$
+
+$0\le y\le 475$
+
+Second, we need to find all intersection points of the constraints. If two of the variables simultaneously have the value 0, then we have characterized an intersection point. The following chart shows all the intersection points we have. 
+
+
+```{r}
+#install.packages("kableExtra")
+library("kableExtra")
+library("knitr")
+
+extreme_points <- c(1:10)
+x <-c(0, 0, 0, 0, 3000, 600, 750, 4200/11, 300, 450)
+y <- c(0, 500, 1200, 750, 0, 0, 0, 4800/11, 450, 300)
+s1 <- c(30000, 0, -42000, -15000, 0, 24000, 22500, 0, 0, 7500)
+s2 <- c(30, 17.5, 0, 11.25, -120, 0, -7.5, 0, 3.75, 0)
+s3 <- c(750, 250, -450, 0, -2250, 150, 0, -750/11, 0, 0)
+
+df <- data.frame(extreme_points, x, y, s1, s2, s3)
+df
+```
+
+Third, we need to determine if the intersection points are feasible to obtain the extreme points. A negative value for any of the five variables indicates that a constraint is not satisfied. Then we will remove those infeasible points.
+
+```{r}
+extreme_points <- c(1, 2, 6, 9, 10)
+x <-c(0, 0, 600, 300, 450)
+y <- c(0, 500, 0, 450, 300)
+s1 <- c(30000, 0, 24000, 0, 7500)
+s2 <- c(30, 17.5, 0, 3.75, 0)
+s3 <- c(750, 250, 150, 0, 0)
+obj_fun <- c(0, 1500, 1200, 1950, 1800)
+
+df <- data.frame(extreme_points, x, y, s1, s2, s3, obj_fun)
+df
+```
+
+The conclusion is same as we got from the other two methods.
+
+
+***Simplex Method***
+
+*1. Tableau Format: the linear program in Tableau Format, with slack variables and the objective*
+
+```{r}
+x <-c(10, 1/20, 1, -2)
+y <- c(60, 1/40, 1, -3)
+s1 <- c(1, 0, 0, 0)
+s2 <- c(0, 1, 0, 0)
+s3 <- c(0, 0, 1, 0)
+z <- c(0, 0, 0, 1)
+RHS <- c(30000, 30, 750, 0)
+
+df2 <- data.frame(x, y, s1, s2, s3, z, RHS)
+df2
+```
+
+*Dependent variables: {s1; s2; s3, z}
+
+*Independent variables: x = y = 0
+
+*Extreme point: (x, y) = (0, 0)
+
+*Value of objective function: z = 0
+
+
+*2. Initial Extreme Point: the Simplex Method begins with a known extreme point, usually the origin*
+
+In this case, since we already know (0, 0) is one of the feasible extreme point (no negative values for slack variables), therefore, we can use (0, 0) as our initial extreme point.
+
+
+*3. Optimality Test: We apply the optimality test to choose y as the variable entering the dependent set because it corresponds to the negative coefficient with the largest absolute value.*
+
+
+*4. Feasibility Test:*
+
+Applying the feasibility test, we divide the right-hand-side values 30000, 30, and 750 by the components for the entering variable y in each equation (60, 0.025, and 1, respectively), yielding the ratios 500, 1200, 750. The smallest positive ratio is 500, corresponding to the first equation that has the slack variable s1. Thus, we choose s1 as the exiting dependent variable.
+
+```{r}
+df2$Ratio<- df2$RHS / df2$y
+df2
+```
+
+*5. Pivot: eliminate the entering variable y from remaining rows (which do not contain the exiting variable s1 and have a zero coefficient for it).*
+
+```{r}
+df2[1, ] <- 1/60 * df2[1, ]
+df2[2, ] <- -0.025 * df2[1, ] + df2[2, ]
+df2[3, ] <- -1 * df2[1, ] +df2[3, ]
+df2[4, ] <- 3 * df2[1, ] + df2[4, ]
+
+df2
+```
+
+*Dependent variables: {y; s2; s3; z}
+
+*Independent variables: x = s1 = 0
+
+*Extreme point: (x, y) = (0, 500)
+
+*Value of objective function: z = 1500
+
+
+#6. Repeat Steps 3-5 until an optimal extreme point is found.
+
+Since there is a negative coefficient for x, then x is our next entering variable.
+
+```{r}
+df2$Ratio <- df2$RHS / df2$x
+df2
+```
+
+The smallest positive ratio is 300, therefore, we will choose s3 as our exiting variable. Then, eliminate the entering variable x from remaining rows(which do not contain the exiting variable s3 and have a zero coefficient for it).
+
+```{r}
+df2[3, ] <- (1/0.8333) * df2[3, ]
+df2[1, ] <- -0.16666667 * df2[3, ] + df2[1, ]
+df2[2, ] <- -0.04583333 * df2[3, ] +df2[2, ]
+df2[4, ] <- 1.5 * df2[3, ] + df2[4, ]
+
+df2
+```
+
+*Dependent variables: {x; s1; s2; z}
+
+*Independent variables: y = s3 = 0
+
+*Extreme point: (x, y) = (300, 450)
+
+*Value of objective function: z = 1950
+
+
+Because there are no negative coefficients in the bottom row, we obtain the optimal solution. The largest value for objective function is 1950, when x = 300 and y = 450.
+
+
+
+####b. Next, assume that the farmer has the oppportunity to sign a nice contract with a grocery store to grow and deliver at least 300 bushels of tomatoes and at least 500 bushels of corn. Should the farmer sign the contract? Support your recommendation.
+
+
+I think the farmers should sign the contract as long as the farmer has enough capital and amount of water to raise them. 300 bushels of tomato and 500 bushels of corn can bring in profits of (2 * 300 + 3 * 500) = 2100 dollars, which is higher than the maximum profit that can generated from previous model. However, it will cost farmer 800 dollars capital, 33000 gallons of water to raise them (land is enough), which the farmers won't have enough.  
+
+
+
+####c. Now assume that the farmer can obtain an additional 10,000 gallons of water for a total cost of $50. Should he obtain the additional water? Support your recommendation.
+
+With all other conditions fixed, the answer is an absolutely yes. The capital owned by the farmer will get reduced by 50 dollars and the number of gallons of water will get increased by 10000. The maximum profit in this case is going to be 2060 dollars which is higher than what farmer would have made if he does not purchase additional gallons of water. In this case, he will need to raise 40 bushels of tomatoes and 660 bushels of corns, it is very reasonable since corn is more profitable compare to tomatoes and to raise corn requires much more water.
+
+```{r}
+library("lpSolve")
+
+f.obj <- c(2, 3)
+
+row1 = c(10, 60)
+row2 = c(1/20, 1/40)
+row3 = c(1, 1)
+
+
+f.con <- rbind(row1, row2, row3)
+f.dir <- c("<=", "<=", "<=")
+f.rhs <- c(40000, 30, 700)
+
+lp ("max", f.obj, f.con, f.dir, f.rhs)
+lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+```
+
+
+
+
