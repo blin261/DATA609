@@ -1,0 +1,166 @@
+---
+title: "DATA609 HW4"
+author: "Bin Lin"
+date: "2017-9-24"
+output: html_document
+---
+Page 191: #3. Using Monte Carlo simulation, write an algorithm to calculate an approximation to ?? by considering the number of random points selected inside the quarter circle 
+
+
+$Q:{ x }^{ 2 }+{ y }^{ 2 }=1,\quad x\ge 0,\quad y\ge 0$
+
+where the quarter circle is taken to be inside the square
+
+$S:0\le x\le 1\quad and\quad 0\le y\le 1$
+
+Use the equation ?? / 4 = area Q/area S
+
+
+```{r}
+set.seed(888)
+sim_pi <- function(n)
+{
+    x <- runif(n)
+    y <- runif(n)
+    count = 0
+    for (i in 1:n)
+      {
+      if (x[i] ^ 2 + y[i] ^ 2 <=1)
+        count = count + 1
+      }
+    return (count / n * 4)
+}
+
+points <- c(10, 100, 1000, 10000, 100000)
+results <- lapply(points, sim_pi)
+  
+results
+```
+
+Page 194: #1. Use the middle-square method to generate
+
+```{r}
+middle_square <- function (x, n)
+{
+  if (x == 0)
+    return (0)
+  
+  seed <- x
+  a <- seed ^ 2
+  s <- toString(a)
+  
+  len = floor(log10(a)) + 1
+  
+  while (len < 2 * n)
+    {
+    s <- paste("0", s, sep = "")
+    len = len + 1
+    }
+  start <- (len / 2 - n / 2 + 1)
+  end <- (len / 2 + n / 2)
+  s <- substr(s, start, end)
+  
+  return (as.numeric(s))
+
+}
+```
+
+
+a. 10 random numbers using x0 = 1009.
+
+```{r}
+results <- c()
+rand_num <- middle_square(1009, 4)
+results <- rbind(results, rand_num)
+
+
+iteration <- 1
+while (iteration < 10)
+  {
+  rand_num <- middle_square(rand_num, 4)
+  results <- rbind(results, rand_num)
+  iteration <- iteration + 1 
+  }
+
+print (results)
+```
+
+
+b. 20 random numbers using x0 = 653217.
+
+```{r}
+results <- c()
+rand_num <- middle_square(653217, 6)
+results <- rbind(results, rand_num)
+
+
+iteration <- 1
+while (iteration < 20)
+  {
+  rand_num <- middle_square(rand_num, 6)
+  results <- rbind(results, rand_num)
+  iteration <- iteration + 1 
+  }
+
+print (results)
+```
+
+c. 15 random numbers using x0 = 3043.
+```{r}
+results <- c()
+rand_num <- middle_square(3043, 4)
+results <- rbind(results, rand_num)
+
+
+iteration <- 1
+while (iteration < 15)
+  {
+  rand_num <- middle_square(rand_num, 4)
+  results <- rbind(results, rand_num)
+  iteration <- iteration + 1 
+  }
+
+print (results)
+```
+
+d. Comment about the results of each sequence. Was there cycling? Did each sequence degenerate rapidly?
+
+For A, there is no cycling, however, the sequence degenerate rapidly. 
+
+For B, no cycling, no degeneration.
+
+For C, it does not degenerate, but it cycles around every 5 values.
+
+
+4. Horse Race-Construct and perform a Monte Carlo simulation of a horse race. You can be creative and use odds from the newspaper, or simulate the Mathematical Derby with the entries and odds shown in following table.
+
+Construct and perform a Monte Carlo simulation of 1000 horse races. Which horse won the most races? Which horse won the fewest races? Do these results surprise you? Provide the tallies of how many races each horse won with your output.
+
+Based on the sample table, Dancin' Dantzig won the most races. L'Hopital won the fewest races. The result did not supprise me, because the simmulated probability of each horse winning is about same as the theretically winning odds for each horse.
+
+
+```{r}
+set.seed(888)
+odds <- c(1/8, 1/6, 1/10, 1/13, 1/5, 1/36, 1/16, 1/5)
+entry_name <- c("Euler's Folly", "Leapin Leibniz", "Newton Lobell", "Count Cauchy", "Pumped up Poisson", "Loping L'Hopital", "Steamin' Stokes", "Dancin' Dantzig")
+df1 <- data.frame(entry_name, odds)
+
+sum(df1$odds)
+df1$odds <- df1$odds / sum(odds)
+
+x <- runif(1000, sum(odds))
+sim_horse <- sample(entry_name, 1000, replace = TRUE, prob = odds)
+table(sim_horse)
+
+df2 <- as.data.frame(table(sim_horse))
+colnames(df2) <- c("entry_name", "Number of Wins")
+
+df3 <- as.data.frame(prop.table(table(sim_horse)))
+colnames(df3) <- c("entry_name", "Simmulated Odds")
+
+df <- merge(df1, df2, by = "entry_name")
+df <- merge(df, df3, by = "entry_name")
+
+df
+```
+

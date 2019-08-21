@@ -1,0 +1,98 @@
+---
+title: "DATA609 HW10"
+author: "Bin Lin"
+date: "2017-11-1"
+output: html_document
+---
+
+Page 469
+
+3. The following data were obtained for the growth of a sheep population introduced into a new environment on the island of Tasmania (adapted from J. Davidson, ''On the Growth of the Sheep Population in Tasmania,'' Trans. R. Soc. S. Australia 62(1938): 342-346).
+
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture10.PNG)
+
+a. Make an estimate of M by graphing P(t)
+```{r}
+library(ggplot2)
+
+t <- c(1814, 1824, 1834, 1844, 1854, 1864)
+Pt <- c(125, 275, 830, 1200, 1750, 1650)
+df <- data.frame(t, Pt)
+
+ggplot(data = df, aes(x = t, y = Pt)) + geom_point() + xlab("Years") + ylab("Sheep Population")
+```
+
+From this graph, I will estimate M, which is maximum population, to be approximately 2000.
+
+
+
+b. Plot ln[P/ (M - P) against t . If a logistic curve seems reasonable, estimate rM and t*.
+
+According to the following graph, the logistic regression follows approximately linear relationship. Therefore, logistic curve is reasonable. 
+
+```{r}
+M <- 2000
+ln_PMP <- log(Pt / (M - Pt))
+df <- cbind(df, ln_PMP) 
+ggplot(data = df, aes(x = t, y = ln_PMP)) + geom_point() + stat_smooth(method = "lm") + xlab("Years") + ylab("log(Pt / (M - Pt))")
+```
+```{r}
+m <- lm(ln_PMP ~ df$t)
+coefficients(m)
+rM <- 0.09539543
+C <- 1814 * rM - 175.59646688
+t_star <- (- C / rM) + 1814
+
+#Slope
+rM
+
+#Constant
+C
+
+#Time when population P reaches half the M. 
+t_star
+```
+
+
+
+Page478:
+
+6. Suggest other phenomena for which the model described in the text might be used.
+
+Patient blood glucose level has to keep in certain range. Glucose that is higher than a certain value is called hyperglycemia. Long term consequences of hyperglycemia may involve damages to the kidney, nerves, retina, and vascular. However, if the the glood glucose is lower than a level, the situation is called hypogelycemia. Patient might experience seizures, coma, even death. Many factors will affects the sugar level inside the body. For instance, the food that people eat, family histories, physical activities et cetera. If patient take medications, then medications will be another factor that can influence blood glucose level.
+
+
+
+Page 481
+
+1.
+a. Using the estimate that db = 0.054v^2, where 0.054 has dimension ft.hr^2/mi^2, show that the constant k in Equation (11.29) has the value 19.9 ft/sec^2.
+
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture11.PNG)
+
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture12.jpg)
+
+
+b. Using the data in Table 4.4, plot db in ft versus v^2 / 2 in ft^2/sec^2 to estimate 1/k directly.
+
+```{r}
+speed <- c(20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80)
+distance <- c(20, 28, 40.5, 52.5, 72, 92.5, 118, 148.5, 182, 220.5, 266, 318, 376)
+
+speed <- speed * 5280 / 3600
+speed
+
+v_square_half <- speed ^ 2 / 2
+df1 <- data.frame(v_square_half, distance)
+ggplot(data = df1, aes(x = v_square_half, y = distance)) + geom_point() + stat_smooth(method = "lm") + xlab("v^2/2") + ylab("Braking Distance")
+
+```
+
+```{r}
+m1 <- lm(df1$distance ~ df1$v_square_half)
+coefficients(m1)
+k <- 1 / 0.0545909
+k
+```
+
+The estimate of k from the graph is 18.31807.

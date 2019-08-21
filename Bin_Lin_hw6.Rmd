@@ -1,0 +1,86 @@
+---
+title: "DATA 609 HW6"
+author: "Bin Lin"
+date: "2017-10-1"
+output: html_document
+---
+
+
+Page 251: #2. Nutritional Requirements-A rancher has determined that the minimum weekly nutritional requirements for an average-sized horse include 40 lb of protein, 20 lb of carbohydrates, and 45 lb of roughage. These are obtained from the following sources in varying amounts at the prices indicated:
+
+
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture1.PNG)
+
+
+Formulate a mathematical model to determine how to meet the minimum nutritional requirements at minimum cost.
+
+Goal 1: Minimize Cost : 
+
+$1.8{ x }_{ 1 }+3.5{ x }_{ 2 }+0.4{ x }_{ 3 }+1{ x }_{ 4 }$
+
+Goal 2: Protein: 
+
+$0.5{ x }_{ 1 }+1{ x }_{ 2 }+2.0{ x }_{ 3 }+6{ x }_{ 4 }\ge 40$
+
+Goal 3: Carbohydrates:
+
+$2.0{ x }_{ 1 }+4.0{ x }_{ 2 }+0.5{ x }_{ 3 }+1.0{ x }_{ 4 }\ge 20$
+
+Goal 4: Roughage: 
+
+$5.0{ x }_{ 1 }+2.0{ x }_{ 2 }+1.0{ x }_{ 3 }+2.5{ x }_{ 4 }\ge 45$
+
+Goal 5: 
+
+${ x }_{ 1 },{ x }_{ 2 },{ x }_{ 3 },{ x }_{ 4 }\quad \ge 0$
+
+
+
+
+Page 264:
+
+![Figure 2](/Users/blin261/Desktop/DATA609/Capture2.PNG)
+
+
+```{r}
+lumber_boardfeet <- function(x){(48 - 8 * x) / 6}
+carpentry_hours <- function(x){20 - 4 * x}
+
+
+curve(lumber_boardfeet, from=0, to=6, xlab="x", ylab="y")
+curve(carpentry_hours, from=0, to=6, xlab="x", ylab="y", add = TRUE)
+abline(a = 5, b = 0)
+abline(a = 0, b = 0)
+```
+
+According to the graph, the feasible region is nonempty and bounded convex triangle, which has three extreme points. They are (0, 5), (0, 8), (2.25, 5). The corresponding objective function are 175, 280, 197.5. Therefore, the objective function is maximized when x = 0, and y = 8.
+
+
+Page 278:
+
+Use the Simplex Method to resolve Problems 6
+
+
+```{r}
+
+#install.packages("lpSolve")
+library("lpSolve")
+
+f.obj <- c(10, 35)
+
+row1 = c(8, 6)
+row2 = c(4, 1)
+row3 = c(0, 1)
+
+
+f.con <- rbind(row1, row2, row3)
+f.dir <- c("<=", "<=", ">=")
+f.rhs <- c(48, 20, 5)
+
+lp ("max", f.obj, f.con, f.dir, f.rhs)
+lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+```
+
+The result obtained from Simplex Method matches with that of graphicl analysis.
+
+

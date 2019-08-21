@@ -1,0 +1,205 @@
+---
+title: "DATA 609 HW5"
+author: "Bin Lin"
+date: "2017-9-24"
+output: html_document
+---
+
+Page 228: #1. Consider a model for the long-term dining behavior of the students at College USA. It is found that 25% of the students who eat at the college's Grease Dining Hall return to eat there again, whereas those who eat at Sweet Dining Hall have a 93% return rate. These are the only two dining halls available on campus, and assume that all students eat at one of these halls. Formulate a model to solve for the long-term percentage of students eating at each hall.
+
+${ G }rease_{ n+1 }=0.25{ Grease }_{ n }+0.07{ Sweet }_{ n }$
+
+$Sweet_{ n+1 }=0.75{ Grease }_{ n }+0.93{ Sweet }_{ n }$
+
+```{r}
+#I assume each dining area has 50% of the students in the begining.
+Grease <- 0.5
+Sweet <- 0.5
+df <- data.frame(Grease, Sweet)
+
+
+df$Grease[1]
+
+for (i in 1:10)
+{ 
+  a <- (0.25 * df$Grease[i] + 0.07 * df$Sweet[i])
+  b <- (0.75 * df$Grease[i] + 0.93 * df$Sweet[i])
+  df <- rbind(df, c(a, b))
+}
+df
+```
+The results show that after few iterations, the number of students in each dining hall has reach steady state with around 91.46% of students eat at Sweet Dining Hall and 8.54% of students eat at Grease Dining Hall. 
+
+
+
+Page 232 #1. Consider a stereo with CD player, FM-AM radio tuner, speakers (dual), and power amplifier (PA) components, as displayed with the reliabilities shown in Figure 6.11. Determine the system's reliability. What assumptions are required in your model?
+
+![Alt text](/Users/blin261/Desktop/DATA609/Capture.PNG)
+
+
+Power Amplifier (PA): series system
+
+${ R }_{ PA }=0.95$
+
+
+CD and FM-AM radio tuner: parallel system
+
+${ R }_{ CD-FM-AM }={ R }_{ CD }+{ R }_{ FM-AM }-{ R }_{ CD }*{ R }_{ FM-AM }=0.98+0.97-0.98*0.97=0.9994$
+
+
+Speaker: parallel system
+
+${ R }_{ speaker }={ R }_{ speaker1 }+{ R }_{ speaker2 }-{ R }_{ speaker1 }*{ R }_{ speaker2 }=0.99+0.99-0.99*0.99=0.9999$
+
+
+System Reliability: series system
+
+${ R }_{ System }={ R }_{ PA }*{ R }_{ CD-FM-AM }*{ R }_{ Speaker }=0.95*0.9994*0.9999=0.949$
+
+
+
+I am assuming the power amplifier forms a series system with other parts of stereo. CD player and FM-AM radio tuner are parallel each other, but its integrity is also part of series sysmte. Same idea apply for two speakers.
+
+
+
+
+Page 240 
+Use the basic linear model y = ax + b to fit the following data sets. Provide the model,
+provide the values of SSE, SSR, SST, and R2, and provide a residual plot.
+```{r}
+library(ggplot2)
+df <- data.frame(Height = 60:80, Weight = c(132, 136, 141, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 201, 206, 212, 218, 223, 229, 234))
+df
+
+ggplot(data = df, aes(x = Height, y = Weight)) + geom_point(color='blue')+   geom_smooth(method = "lm", formula = y ~ x, color = "red")
+```
+
+
+1. For Table 2.7, predict weight as a function of height.
+
+The linear model for this equation is Weight = 5.1364 * Height -178.49
+
+
+Slope: $a=\frac { m\sum { { x }_{ i }{ y }_{ i } } -\sum { { x }_{ i } } \sum { { y }_{ i } }  }{ m\sum { { x }_{ i }^{ 2 } } -(\sum { { x }_{ i }) } ^{ 2 } }$
+
+
+Intercept: 
+$b=\frac { \sum { { x }_{ i }^{ 2 } } \sum { { y }_{ i } } -\sum { { x }_{ i } } { y }_{ i }\sum { { x }_{ i } }  }{ m\sum { { x }_{ i }^{ 2 } } -(\sum { { x }_{ i }) } ^{ 2 } }$
+
+
+```{r}
+m <- nrow(df)
+numerator1 <- m * sum(df$Height * df$Weight) - sum(df$Height) * sum(df$Weight)
+denomenator1 <- (m * sum(df$Height ^ 2) - (sum(df$Height) ^ 2))
+a <- numerator1 / denomenator1
+a
+
+
+numerator2 <- sum(df$Height ^ 2) * sum(df$Weight) - sum(df$Height * df$Weight) * sum(df$Height)
+denomenator2 <- m * sum(df$Height ^ 2) - sum(df$Height) ^ 2
+b <- numerator2 / denomenator2
+b
+```
+
+$SSE\quad =\quad \sum _{ i=1 }^{ m }{ \left[ { y }_{ i }-(a{ x }_{ i }+b) \right] ^{ 2 } }$
+
+```{r}
+SSE <- sum((df$Weight - (a * df$Height + b)) ^ 2)
+SSE
+```
+
+$SST\quad =\quad \sum _{ i=1 }^{ m }{ { (y }_{ i }-\overline { y) }  } ^{ 2 }$
+
+```{r}
+SST <- sum((df$Weight - mean(df$Weight)) ^ 2)
+SST
+```
+
+
+$SSR=SST-SSE$
+
+```{r}
+SSR <- SST - SSE
+SSR
+```
+
+${ R }^{ 2 }=1-\frac { SSE }{ SST }$
+
+```{r}
+r_square <- 1 - (SSE / SST)
+r_square
+```
+
+```{r}
+m1 <- lm(df$Weight ~ df$Height)
+summary(m1)
+
+par(mfrow=c(2,2))
+plot(m1)
+```
+
+
+2. For Table 2.7, predict weight as a function of the cube of the height.
+
+
+The linear model for this equation is Weight = 0.000347 * Height^3 + 59.46
+
+Slope: $a=\frac { m\sum { { x }_{ i }{ y }_{ i } } -\sum { { x }_{ i } } \sum { { y }_{ i } }  }{ m\sum { { x }_{ i }^{ 2 } } -(\sum { { x }_{ i }) } ^{ 2 } }$
+
+
+Intercept: 
+$b=\frac { \sum { { x }_{ i }^{ 2 } } \sum { { y }_{ i } } -\sum { { x }_{ i } } { y }_{ i }\sum { { x }_{ i } }  }{ m\sum { { x }_{ i }^{ 2 } } -(\sum { { x }_{ i }) } ^{ 2 } }$
+
+```{r}
+df$cube_height <- df$Height ^ 3
+
+
+m <- nrow(df)
+numerator1 <- m * sum(df$cube_height * df$Weight) - sum(df$cube_height) * sum(df$Weight)
+denomenator1 <- (m * sum(df$cube_height ^ 2) - (sum(df$cube_height) ^ 2))
+a <- numerator1 / denomenator1
+a
+
+
+numerator2 <- sum(df$cube_height ^ 2) * sum(df$Weight) - sum(df$cube_height * df$Weight) * sum(df$cube_height)
+denomenator2 <- m * sum(df$cube_height ^ 2) - sum(df$cube_height) ^ 2
+b <- numerator2 / denomenator2
+b
+```
+
+$SSE\quad =\quad \sum _{ i=1 }^{ m }{ \left[ { y }_{ i }-(a{ x }_{ i }+b) \right] ^{ 2 } }$
+
+```{r}
+SSE <- sum((df$Weight - (a * df$cube_height + b)) ^ 2)
+SSE
+```
+
+$SST\quad =\quad \sum _{ i=1 }^{ m }{ { (y }_{ i }-\overline { y) }  } ^{ 2 }$
+
+```{r}
+SST <- sum((df$Weight - mean(df$Weight)) ^ 2)
+SST
+```
+
+
+$SSR=SST-SSE$
+
+```{r}
+SSR <- SST - SSE
+SSR
+```
+
+${ R }^{ 2 }=1-\frac { SSE }{ SST }$
+
+```{r}
+r_square <- 1 - (SSE / SST)
+r_square
+```
+
+```{r}
+m2 <- lm(df$Weight ~ df$cube_height)
+summary(m2)
+
+par(mfrow=c(2,2))
+plot(m2)
+```

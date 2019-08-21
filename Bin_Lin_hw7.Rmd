@@ -1,0 +1,90 @@
+---
+title: "DATA 609 HW7"
+author: "Bin Lin"
+date: "2017-10-8"
+output: html_document
+---
+
+
+Page 304: #2. The bridges and land masses of a certain city can be modeled with graphG in Figure 8.7. J Figure 8.7
+
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture3.PNG)
+
+a. Is G Eulerian? Why or why not?
+
+For a figure to be eulerian, the graph has to be connected between every pair of vertice and every vertex has even degree or that the graph has even degree. Graph G is not eulerian because vertex 2 and 5 has degree of 3, which is an odd number.
+
+
+
+b. Suppose we relax the requirement of the walk so that the walker need not start and end at the same land mass but still must traverse every bridge exactly once. Is this type of walk possible in a city modeled by the graph in Figure 8.7? If so, how? If not, why not?
+
+Yes, this type of walk is definitely possible in a city. The reason is because every vertex does not necessarily be even. Walker can leave a city without coming back. The potential path will be 2->1->3->2->4->3->5->4->6->5
+
+
+
+
+Page 307 #1. Consider the graph in Figure 8.11.
+
+![Figure 2](/Users/blin261/Desktop/DATA609/Capture4.PNG)
+
+
+a. Write down the set of edges E(G).
+
+E(G) = {ab, ae, af, bc, bd, cd, de, df, ef}
+
+
+
+b. Which edges are incident with vertex b?
+
+ab, bc, bd
+
+
+
+c. Which vertices are adjacent to vertex c?
+
+b, d
+
+
+
+d. Compute deg(a).
+
+deg(a) = 3
+
+
+e. Compute |E(G)|.
+
+|E(G)| = 9
+
+
+Page 320 #10. A basketball coach needs to find a starting lineup for her team. There are five positions that must be filled: point guard (1), shooting guard (2), swing (3), power forward (4), and center (5). Given the data in Table 8.7, create a graph model and use it to find a feasible starting lineup. What changes if the coach decides she can't play Hermione in position 3?
+
+![Figure 3](/Users/blin261/Desktop/DATA609/Capture5.PNG)
+
+
+```{r}
+
+Alice <- c(1, 1, 0, 0, 0)
+Bonnie <- c(1, 0, 0, 0, 0)
+Courtney <- c(1, 1, 0, 0, 0)
+Deb <- c(0, 0, 1, 1, 1)
+Ellen <- c(0, 1, 0, 0, 0)
+Fay <- c(1, 0, 0, 0, 0)
+Gladys <- c(0, 0, 1, 1, 0)
+Hermione <- c(0, 1, 1, 0, 0)
+
+A <- rbind(Alice, Bonnie, Courtney, Deb, Ellen, Fay, Gladys, Hermione)
+colnames(A) <- c("Point Guard", "Shooting Guard", "Swing", "Power Forward", "Cernter")
+
+A
+```
+
+
+```{r}
+#install.packages("igraph")
+library(igraph)
+
+B <- graph_from_incidence_matrix(A)
+plot(B)
+```
+
+From the graph we are able to tell that Deb must play Center, Gladys must play Power Forward, and Hermione must play Swing. We have plenty of option for Point Guard and Shooting Guard. If the coach decides she can't play Hermione in position 3 (Swing), then we are not able to find a feasible solution to fill five positions. 

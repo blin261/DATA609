@@ -1,0 +1,96 @@
+---
+title: "DATA609 HW11"
+author: "Bin Lin"
+date: "2017-11-4"
+output: html_document
+---
+Page 529
+
+1. verify that the given function pair is a solution to the first-order system.
+
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture11.PNG)
+
+$\frac { dx }{ dt } =\frac { d(-{ e }^{ t }) }{ dt } ={ -e }^{ t }=-y$
+
+$\frac { dy }{ dt } =\frac { d({ e }^{ t }) }{ dt } ={ e }^{ t }=-x$
+
+Therefore, it is a solution to the first-order system.
+
+
+Page 529
+
+6. Find and classify the rest points of the given autonomous system.
+
+![Figure 2](/Users/blin261/Desktop/DATA609/Capture12.PNG)
+
+$\frac { dx }{ dt } =f(x,\quad y)=-(y-1)=0$
+
+Then y = 1
+
+$\frac { dy }{ dt } =g(x,\quad y)=x-2=0$
+
+Then x = 2
+Therefore, the rest points is (2, 1)
+
+```{r}
+
+#Reference:http://www.di.fc.ul.pt/~jpn/r/odes/index.html
+#install.packages("deSolve")
+library(deSolve)
+
+parameters    <- c(a = 1, b = 1)
+initial.state <- c(X = -1, Y = -1)
+
+trajectory <-function(t, state, parameters) {
+  with(as.list(c(state, parameters)),{
+    dX <- 1 - b * Y
+    dY <- a * X - 2
+    
+    list(c(dX, dY))
+  })
+}
+times <- seq(0, 100, by = 0.01)
+out <- ode(y = initial.state, times = times, func = trajectory, parms = parameters)
+head(out)
+
+
+plot(out, xlab = "time", ylab = "-")
+plot(out[, "X"], out[, "Y"], pch = ".")
+```
+
+According to the trajectory of x and y, this is a periodic motion. Therefore, the rest point in this case is unstable. 
+
+
+Page 546
+
+1. Apply the first and second derivative tests to the function f(y) = y^a / e^by to show that y = a / b is a unique critical point that yields the relative maximum f(a/b). Show also that f (y) approaches zero as y tends to infinity.
+
+$f\left( y \right) ={ y }^{ a }/{ e }^{ by }$
+
+$f'\left( y \right) =(a{ y }^{ a-1 }{ e }^{ by }-{ y }^{ a }b{ e }^{ by })/{ e }^{ 2by }$
+
+$f'\left( y \right) =(a{ y }^{ a-1 }-{ by }^{ a })/{ e }^{ by }$
+
+$f'\left( y \right) ={ y }^{ a-1 }(a-{ by })/{ e }^{ by }=0$
+
+Therefore, y = 0 or y = a/b we will obtain critical points. 
+
+$f''\left( y \right) =((a-1)a{ y }^{ a-2 }-{ aby }^{ a-1 }){ e }^{ by }-({ ay }^{ a-1 }-b{ y }^{ a })b{ e }^{ by }/{ e }^{ 2by }$
+
+
+$f''\left( y \right) =({ y }^{ a-2 }({ a }^{ 2 }-a-aby-aby+{ b }^{ 2 }{ y }^{ 2 }))/{ e }^{ by }$
+
+When y = a/b
+
+$f''\left( y \right) =(\frac { a }{ b } )^{ a-2 }(-a))/{ e }^{ a }$
+
+$f''\left( y \right) =(\frac { a^{ a-2 }(-a) }{ b^{ a-2 }{ e }^{ a } } )$
+
+$f''\left( y \right) =(\frac { -a^{ a-1 } }{ b^{ a-2 }{ e }^{ a } } )$
+
+When f'' is negative, we have relative maximum, when f'' is positive we will have relative minimum. 
+If b is positive and a is also positive, then f'' will be negative. The f(a/b) will achieve relative maximum. 
+
+$\lim _{ y\rightarrow \infty  }{ f(y)=\lim _{ y\rightarrow \infty  }{ { y }^{ a }{ /e }^{ by } }  }$
+
+The numerator of this equation is always positive, therefore if b is a positive number the denominator which is an exponentiation is going to increase much faster as y approached infinity. The end result will approach zero. If b is a negative number, then the denominator will approached zero much faster, then the value f(y) is going to approach infinity. 

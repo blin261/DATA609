@@ -1,0 +1,101 @@
+---
+title: "DATA609 HW2"
+author: "Bin Lin"
+date: "2017-9-7"
+output: html_document
+---
+
+
+Page 79: #11. Determine whether the data set supports the stated proportionality model. 
+
+Force 10 20 30 40 50 60 70 80 90
+
+Stretch 19 57 94 134 173 216 256 297 343
+
+
+From the scatter plot, we can tell that y and x^3 has linear relationship which is about to pass the origin (0, 0). Then I created for the two variables and force the intercept to equal to 0. Their best fit line is: y = 0.113 * x^3, where k = 0.113. 
+
+```{r}
+y <- c(0, 1, 2, 6, 14, 24, 37, 58, 82, 114)
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+x_cube <- x ^ 3
+plot(x_cube, y)
+
+m1 <- lm(y ~ x_cube + 0)
+summary(m1)
+```
+
+
+The following graph shows the estimation of k value is valid. Therefore, the dataset support the proportionality model.
+
+
+```{r}
+library(ggplot2)
+df1 <- data.frame(X = x, Y = y, Y_head = 0.113 * x_cube)
+head(df1)
+ggplot() + geom_line(data = df1, aes(x = X, y = Y), color = "red") + geom_line(data = df1, aes(x = X, y = Y_head), color = "blue")
+```
+
+Page 94: #4. Lumber Cutters-Lumber cutters wish to use readily available measurements to estimate the number of board feet of lumber in a tree. Assume they measure the diameter of the tree in inches at waist height. Develop a model that predicts board feet as a function of diameter in inches.
+
+Use the following data for your test:
+
+x 17 19 20 23 25 28 32 38 39 41
+
+y 19 25 32 57 71 113 123 252 259 294
+
+The variable x is the diameter of a ponderosa pine in inches, and y is the number of board feet divided by 10.
+
+
+a. Consider two separate assumptions, allowing each to lead to a model. Completely analyze each model.
+
+i. Assume that all trees are right-circular cylinders and are approximately the same height.
+
+If all trees have the same height, so we can consider h to be a constant. Based on the formula for right-circular cylinder $V=\pi { r }^{ 2 }h$, we are able to tell that $V\propto { r }^{ 2 }\quad \quad$ or $V\propto { d }^{ 2 }$. In this case, we have $\quad y\propto { x }^{ 2 }$. Based on the linear model (intercept was forced to be 0), the best fit line is y = 0.158 * x^2, where k = 0.158.
+
+```{r}
+x <- c(17, 19, 20, 23, 25, 28, 32, 38, 39, 41)
+y <- c(19, 25, 32, 57, 71, 113, 123, 252, 259, 294)
+
+x_square <- x ^ 2
+plot(x_square, y)
+
+m2 <- lm(y ~ x_square + 0)
+summary(m2)
+```
+
+```{r}
+df2 <- data.frame(X = x, Y = y, Y_head = 0.158 * x_square)
+head(df2)
+ggplot() + geom_line(data = df2, aes(x = X, y = Y), color = "red") + geom_line(data = df2, aes(x = X, y = Y_head), color = "blue")
+```
+
+
+
+ii. Assume that all trees are right-circular cylinders and that the height of the tree is proportional to the diameter.
+
+Since $h\propto d\ $, we know $ h\propto r$. According to the same formular $V=\pi { r }^{ 2 }h$, $V\propto { r }^{ 3 }$. In the other words, $y\propto { x }^{ 3 } $. The best fit line will become y = 0.004362 * x^3, where k = 0.004362. 
+
+```{r}
+x_cube <- x ^ 3
+plot(x_cube, y)
+
+m3 <- lm(y ~ x_cube + 0)
+summary(m3)
+```
+
+```{r}
+df3 <- data.frame(X = x, Y = y, Y_head = 0.004362 * x_cube)
+head(df3)
+ggplot() + geom_line(data = df3, aes(x = X, y = Y), color = "red") + geom_line(data = df3, aes(x = X, y = Y_head), color = "blue")
+```
+
+
+b. Which model appears to be better? Why? Justify your conclusions.
+
+The second model appears to be better, because the estimated line more closed matches the actual line. The reason for that I think, the second assumption makes much more sense than the first one. In reality, the height of trees should be proportional to the diameter of the trees.
+
+
+Page 99: #3. Discuss several factors that were completely ignored in our analysis of the gasoline mileage problem.
+
+I think the analysis ignore some factors such as the power for ignition and the power for maintain air conditioning. If drivers have heavy brake frequently, it will waste energy too. These factors, which are ignored in the analysis, will all affect fuel mileage

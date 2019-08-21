@@ -1,0 +1,175 @@
+---
+title: "DATA609 HW12"
+author: "Bin Lin"
+date: "2017-11-23"
+output: html_document
+---
+
+Page 576
+2. Consider a company that allows back ordering. That is, the company notifies customers that a temporary stock-out exists and that their order will be filled shortly. 
+![Figure 1](/Users/blin261/Desktop/DATA609/Capture14.PNG)
+
+
+What conditions might argue for such a policy? 
+
+The business is doing exceptionally well, so that products are sold out much more quickly than expected.
+Some products that might have very high storage cost. 
+Some products that are rarely sold in the company, which ends up expiring most of times.
+
+
+What effect does such a policy have on storage costs? 
+
+This policy is able to lower the storage costs.
+
+
+Should costs be assigned to stock-outs? Why? How would you make such an assignment? 
+
+Yes, because for back ordering, the company may pay the actual cost of the products without negotiating for any discount and occasionally cost for the expedited shipping as well. I would assign the back-ordering product to the optimal order quantit for next saling period, so that the model will contain all positive numbers.  
+
+
+What assumptions are implied by the model in Figure 13.7? 
+
+The assumption that is implied in figure 13.7 is telling us that the company is able to sell the product even though it does not have the product in stock. That is why the quantity in stock can go negative. 
+
+
+Suppose a ''loss of goodwill cost'' of w dollars per unit per day is assigned to each stock-out. Compute the optimal order quantity Q* and interpret your model.
+
+
+s: storage costs per gallon per day
+d: delivery cost in dollars per delivery
+r: demand rate in gallons per day
+q: quantity ordered per cycle
+x: maximum back order quantiy
+w: loss of goodwill cost
+t1: time period when the inventory is positive
+t2: time period when the inventory is negative
+t: t1 + t2
+C: Cost per cycle
+c: Cost per day
+
+Since: $\frac { { t }_{ 1 } }{ { t }_{ 2 } } =\frac { q-x }{ x } \quad$
+
+and t = t1 + t2
+
+Therefore: 
+
+${ t }_{ 1 }=t(q-x)/q\quad$
+
+${ t }_{ 2 }=tx/q\quad$
+
+
+Cost:
+
+$C=d+s*\frac { (q-x) }{ 2 } *{ t }_{ 1 }+{ w*\frac { x }{ 2 } *t }_{ 2 }\quad$
+
+$C=d+s\frac { (q-x) }{ 2 } t(q-x)/q+{ w\frac { x }{ 2 }  }tx/q$
+
+
+Then cost per day is equal to
+
+$c=d/t+s\frac { (q-x)^{ 2 } }{ 2q } +{ w\frac { x^{ 2 } }{ 2q }  }$
+
+
+In order to find optimal order quantity Q, we need to substiture t with q. Since q=rt, then t = q/r
+
+
+therefore:
+$c=\frac { rd }{ q } +s\frac { (q-x)^{ 2 } }{ 2q } +{ w\frac { x^{ 2 } }{ 2q }  }$
+
+
+
+
+Its derivative based on q equals:
+
+$c'=\frac { -rd }{ { q }^{ 2 } } +\frac { 4sq(q-x)-2s(q-x)^{ 2 } }{ 4{ q }^{ 2 } } -{ \frac { 2wx^{ 2 } }{ 4q^{ 2 } }  }$
+
+$c'=\frac { -2rd+{ sq }^{ 2 }-{ sx }^{ 2 }-w{ x }^{ 2 } }{ { 2q }^{ 2 } } = 0$
+
+$4rd+2s{ x }^{ 2 }+2w{ x }^{ 2 }=2s{ q }^{ 2 }$
+
+
+
+Its derivative based on x equals:
+
+$c'=\frac { -2s(q-x) }{ 2q } +{ \frac { 2wx }{ 2q }  }=0$
+
+$s(q-x)=wx$
+
+$x\quad =\quad \frac { sq }{ w+s }$ 
+
+
+Plug into previous equation, yields,
+
+$s{ q }^{ 2 }=2rd+(s+w)(\frac { sq }{ (s+w) } )^{ 2 }$
+
+$s{ wq }^{ 2 }=2rd(s+w)$
+
+
+
+The optimal order quantity Q* equals:
+
+${ q }=\sqrt { \frac { 2rd(s+w) }{ sw }  }$
+
+
+
+
+
+Page 584:
+
+2. Find the local minimum value of the function
+
+f(x, y) = 3x^2 + 6xy + 7y^2 - 2x + 4y
+
+$\frac { \partial f }{ \partial x } =6x+6y-2=0$
+
+$\frac { \partial f }{ \partial y } =6x+14y+4=0$
+
+x = 13 / 12
+y = -3 / 4
+
+$\frac { \partial ^{ 2 }f }{ \partial x ^{ 2 }} =6$
+
+$\frac { \partial ^{ 2 }f }{ \partial y ^{ 2 }} =14$
+
+$\frac { \partial ^{ 2 }f }{ \partial x\partial y } =6$
+
+$H=\frac { \partial ^{ 2 }f }{ \partial x^{ 2 } } \frac { \partial ^{ 2 }f }{ \partial y^{ 2 } } -(\frac { \partial ^{ 2 }f }{ \partial x\partial y } )^{ 2 } > 0$
+
+Therefore, it is the local minimum value. 
+
+
+Page 591:
+
+5. Find the hottest point (x, y, z) along the elliptical orbit
+
+4x^2 + y^2 + 4z^2 = 16
+
+where the temperature function is
+
+T(x, y, z) = 8x^2 + 4yz - 16z + 600
+
+Using the method of Lagrange multipliers: 
+
+$L(x,y,z,\lambda )=8{ x }^{ 2 }+4yz-16z+600-\lambda ({ 4x }^{ 2 }+{ y }^{ 2 }+4{ z }^{ 2 }-16)$
+
+$\frac { \partial L }{ \partial x } =16x-8\lambda x=0$
+
+lamdba = 2
+
+$\frac { \partial L }{ \partial y } =4z-2\lambda y=0$
+
+z = y
+
+$\frac { \partial L }{ \partial z } =4y-16-8\lambda z=0$
+
+y = -4/3,
+
+z = -4/3
+
+$\frac { \partial L }{ \partial \lambda  } ={ -4x }^{ 2 }-{ y }^{ 2 }-4{ z }^{ 2 }+16=0$
+
+x= 4/3 or -4/3
+
+Then T = 642.67
+
+By pertubing the values of x , y, and z slightly in either direction, we find the value of T decreases. Thus we condlude the solution is a maximum.
